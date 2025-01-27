@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import generateTokenAndSetCookies from "../utils/generateToken.js";
+
 export const signup = async (req, res) => {
     try {
         const { fullName, username, password, confirmPassword, gender } = req.body;
@@ -33,7 +34,8 @@ export const signup = async (req, res) => {
 
         // Save user to database
         await newUser.save();
-        console.log("Saved User:", newUser);
+
+        // console.log("Saved User:", newUser);
 
         // Generate token and set cookies
         await generateTokenAndSetCookies(newUser._id, res);
@@ -51,13 +53,49 @@ export const signup = async (req, res) => {
     }
 };
 
+export const login = async (req, res) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        const isPasswordCorrect = await bcrypt.compare(password, user?.password || "");
 
-export const login = (req, res) => {
-    console.log("loginUser")
+
+        if (!user || !isPasswordCorrect) {
+            console.log(username, password, user);
+            return res.status(400).json({ error: "Invalid username or password" });
+        }
+
+        generateTokenAndSetCookies(user._id, res);
+
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            username: user.username,
+            profilePic: user.profilePic
+        });
+    }
+    catch (error) {
+        console.log("Error in login controller", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
 }
 
 
 export const logout = (req, res) => {
-    console.log("loginUser")
-}
+    try {
+        res.cookie("jwt", "", { maxAge: 0 });
+        /*
+        "jwt": The name of the cookie you want to clear.
+        "": The empty string sets the cookie's value to nothing (or clears its value).
+        { maxAge: 0 }: This sets the cookie's expiration time to 0 milliseconds from now, effectively making it expire immediately.
+         */
+        res.status(200).json({
+            message: "Logout successfully"
+        });
+    }
+    catch (error) {
+        console.log("Error in logout controller", error); // DEV
+        res.status(500).json({ error: "Internal server Error" }); // PROD
+    }
+};
 
