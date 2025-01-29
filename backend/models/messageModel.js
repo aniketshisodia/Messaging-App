@@ -1,23 +1,25 @@
-import mongoose, { mongo } from "mongoose";
-import User from "./userModel";
+import mongoose from "mongoose";
+import User from "./userModel.js";
 
-const messageSchema = new mongoose.Schema({
-    senderId: {
-        type: mongoose.Schema.Types.ObjectId,
-        res: "User",
-        require: true
+const messageSchema = new mongoose.Schema(
+    {
+        senderId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User", // Correctly referencing the User model
+            required: true, // Fixed typo: 'require' -> 'required'
+        },
+        receiverId: { // Fixed typo: 'recieverId' -> 'receiverId'
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User", // Correctly referencing the User model
+            required: true,
+        },
+        message: {
+            type: String, // Assuming this is the actual message content
+            required: true, // Fixed typo: 'require' -> 'required'
+        },
     },
-    recieverId: {
-        type: mongoose.Schema.Types.ObjectId,
-        res: "User",
-        require: true
-    },
-    message: {
-        type: mongoose.Schema.Types.ObjectId,
-        res: "User",
-        require: true
-    }
-}, { timestamps: true });
+    { timestamps: true }
+);
 
 const Message = mongoose.model("Message", messageSchema);
 export default Message;
