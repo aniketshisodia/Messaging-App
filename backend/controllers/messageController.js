@@ -50,3 +50,31 @@ export const sendMessage = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+// Controller function to get messages from a conversation
+export const getMessage = async (req, res) => {
+    try {
+        // Extract the userToChatId from the request parameters
+        const { id: userToChatId } = req.params;
+
+        // Extract the senderId from the authenticated user (assumed to be added to req.user by middleware)
+        const senderId = req.user._id;
+
+        // Query the Conversation collection to find a conversation between the two users
+        const conversation = await Conversation.findOne({
+            // Use $all to ensure both user IDs are present in the participants array
+            participants: { $all: [senderId, userToChatId] },
+        })
+            // Populate the 'messages' field with the actual message documents
+            .populate("messages");
+
+        // If a conversation is found, send the messages array as the response
+        res.status(200).json(conversation.messages);
+    } catch (error) {
+        // Log the error for debugging purposes
+        console.log("error in getMessage , MessageController", error);
+
+        // Respond with a 500 status code and an error message
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
