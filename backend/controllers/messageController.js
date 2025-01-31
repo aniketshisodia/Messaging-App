@@ -68,6 +68,9 @@ export const getMessage = async (req, res) => {
             // Populate the 'messages' field with the actual message documents
             .populate("messages");
 
+        if (!conversation)
+            returnres.status(200).json([]);
+
         // If a conversation is found, send the messages array as the response
         res.status(200).json(conversation.messages);
     } catch (error) {
