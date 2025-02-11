@@ -1,7 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
+
 import authRoutes from "./routes/authRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
+import userRoutes from "./routes/userRoutes.js"
+
 import connectToMongoDB from "./database/connectToMongoDB.js";
 import cookieParser from "cookie-parser";
 
@@ -15,15 +18,9 @@ app.use(express.json());
 app.use(cookieParser());
 // to parse the incoming request with JSON payloads
 
-
-// test route
-
-app.get('/', (req, res) => {
-    res.send('Hello world!');
-});
-
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/users", userRoutes);
 
 
 app.listen(5000, () => {
