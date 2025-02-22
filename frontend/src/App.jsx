@@ -4,7 +4,7 @@ import Home from "./pages/home/home";
 
 function App() {
   return (
-   <div className="p-4 h-screen flex item-center justify-content">
+   <div className="p-4 h-screen flex item-center justify-center">
     <Home/>
     {/* <Signup></Signup> */}
    </div>
